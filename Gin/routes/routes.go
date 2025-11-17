@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"Gin/internal/books"
 	"net/http"
 	"os"
 	"strings"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,6 +42,11 @@ func SetupRoutes(r *gin.Engine){
 			c.HTML(http.StatusNotFound, "404.html", nil)
 		}
 	})
+
+	repo := books.NewInMemoryBookRepository()
+	service := books.NewBookService(repo)
+	controller := books.NewBookControllers(service)
+	controller.RegisterRoutes(r)
 /*	r.GET("/saludo/:nombre",func(c *gin.Context) {
 		nombre := c.Param("nombre")
 		c.String(http.StatusOK, "Hola, %s :D",nombre)
