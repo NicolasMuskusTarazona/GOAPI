@@ -2,6 +2,7 @@ package routes
 
 import (
 	"Gin/internal/books"
+	"Gin/internal/notebooks"
 	"net/http"
 	"os"
 	"strings"
@@ -38,28 +39,38 @@ func SetupRoutes(r *gin.Engine){
 			c.HTML(http.StatusNotFound, "404.html", nil)
 		}
 	})
-	// CONFIG API (JSON)
-	repo := books.NewInMemoryBookRepository()
-	service := books.NewBookService(repo)
-	controller := books.NewBookControllers(service)
-
-	// API: /api/books
-	api := r.Group("/api")
-	{
-		controller.RegisterRoutes(api)
-	}
-	// LIBROS
+	
+	// LIBROS / Books
+	bookRepo := books.NewInMemoryBookRepository()
+	bookService := books.NewBookService(bookRepo)
 	// Listado ALL
-	r.GET("/books/list", books.BooksListHandler(service))
+	r.GET("/books/list", books.BooksListHandler(bookService))
 	// Listado Individual
-	r.GET("books/list/:id", books.BoksListByIDHandler(service))
+	r.GET("books/list/:id", books.BoksListByIDHandler(bookService))
 	//  Crear
-	r.GET("/books/new", books.BooksFormHandler(service))
+	r.GET("/books/new", books.BooksFormHandler(bookService))
 	// Guardar
-	r.POST("/books/store",books.BooksStoreHandler(service))
+	r.POST("/books/store",books.BooksStoreHandler(bookService))
 	//  Editar
-	r.GET(  "/books/update/:id",books.BooksFormHandler(service))
-	r.POST( "/books/update/:id",books.BooksUpdateHandler(service))
+	r.GET(  "/books/update/:id",books.BooksFormHandler(bookService))
+	r.POST( "/books/update/:id",books.BooksUpdateHandler(bookService))
 	// Borrar
-	r.GET("/books/delete/:id", books.BooksDeleteHandler(service))
+	r.GET("/books/delete/:id", books.BooksDeleteHandler(bookService))
+
+	// Cuadernos / NoteBooks
+	notebookRepo := notebooks.NewInMemoryNoteBookRepository()
+	notebookService := notebooks.NewNoteBookService(notebookRepo)
+	// Listado ALL
+	r.GET("/notebooks/list", notebooks.NoteBooksListHandler(notebookService))
+	// Listado Individual
+	r.GET("notebooks/list/:id", notebooks.NoteBooksListByIDHandler(notebookService))
+	//  Crear
+	r.GET("/notebooks/new", notebooks.NoteBooksFormHandler(notebookService))
+	// Guardar
+	r.POST("/notebooks/store",notebooks.NoteBooksStoreHandler(notebookService))
+	//  Editar
+	r.GET(  "/notebooks/update/:id",notebooks.NoteBooksFormHandler(notebookService))
+	r.POST( "/notebooks/update/:id",notebooks.NoteBooksUpdateHandler(notebookService))
+	// Borrar
+	r.GET("/notebooks/delete/:id", notebooks.NoteBooksDeleteHandler(notebookService))
 }
