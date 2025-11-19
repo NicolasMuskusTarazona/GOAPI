@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,7 +13,7 @@ type Usuario struct{
 	Email  string `json:"email"`
 }
 
-var usuarios []Usuario
+// var usuarios []Usuario
 
 func SetupRoutes(r *gin.Engine){
 
@@ -29,44 +28,38 @@ func SetupRoutes(r *gin.Engine){
 	})
 
 	r.GET("/:page", func(c *gin.Context) {
-
 		page := c.Param("page")
-
 		if !strings.HasSuffix(page, ".html"){
 			page += ".html"
 		}
-
 		if _, err := os.Stat("templates/" + page); err == nil{
 			c.HTML(http.StatusOK, page, nil)
 		}else{
 			c.HTML(http.StatusNotFound, "404.html", nil)
 		}
 	})
-
+	// CONFIG API (JSON)
 	repo := books.NewInMemoryBookRepository()
 	service := books.NewBookService(repo)
 	controller := books.NewBookControllers(service)
-	controller.RegisterRoutes(r)
-/*	r.GET("/saludo/:nombre",func(c *gin.Context) {
-		nombre := c.Param("nombre")
-		c.String(http.StatusOK, "Hola, %s :D",nombre)
-	})
 
-	r.POST("/usuarios", func (c *gin.Context)  {
-		var nuevoUsuario Usuario 
-
-		if err := c.BindJSON(&nuevoUsuario); err !=nil{
-			c.JSON(http.StatusBadRequest, gin.H {"error": "Error al decodificar el JSON"})
-			return
-		}
-
-		if nuevoUsuario.Nombre == "" || nuevoUsuario.Email == ""{
-			c.JSON(http.StatusBadRequest, gin.H {"eror": "Nombre y correo electronico son campos requeridos"})
-		}
-
-		usuarios = append(usuarios, nuevoUsuario)
-
-		c.JSON(http.StatusOK, gin.H{"mensaje":"Usuario registrado","datos": usuarios})
-	})
-		*/
+	// API: /api/books
+	api := r.Group("/api")
+	{
+		controller.RegisterRoutes(api)
+	}
+	// LIBROS
+	// Listado ALL
+	r.GET("/books/list", books.BooksListHandler(service))
+	// Listado Individual
+	r.GET("books/list/:id", books.BoksListByIDHandler(service))
+	//  Crear
+	r.GET("/books/new", books.BooksFormHandler(service))
+	// Guardar
+	r.POST("/books/store",books.BooksStoreHandler(service))
+	//  Editar
+	r.GET(  "/books/update/:id",books.BooksFormHandler(service))
+	r.POST( "/books/update/:id",books.BooksUpdateHandler(service))
+	// Borrar
+	r.GET("/books/delete/:id", books.BooksDeleteHandler(service))
 }

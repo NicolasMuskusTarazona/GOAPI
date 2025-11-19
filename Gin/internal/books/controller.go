@@ -15,14 +15,13 @@ func NewBookControllers(s *BookService) *BookController {
 	return  &BookController{service: s,}
 }
 
-func (c *BookController)RegisterRoutes(r * gin.Engine){
-	books := r.Group("/books")
+func (c *BookController)RegisterRoutes(r * gin.RouterGroup){
 	{
-		books.GET("/", c.GetAll)
-		books.POST("/", c.Create)
-		books.GET("/:id", c.GetByID)
-		books.DELETE("/:id", c.Delete)
-		books.PUT("/:id",c.Put)
+		r.GET("/books", c.GetAll)
+		r.GET("/books/:id", c.GetByID)
+		r.POST("/books", c.Create)
+		r.PUT("/books/:id",c.Put)
+		r.DELETE("/books/:id", c.Delete)
 	}
 }
 
