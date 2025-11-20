@@ -1,0 +1,17 @@
+CREATE DATABASE IF NOT EXISTS Library;
+USE Library;
+
+CREATE TABLE IF NOT EXISTS books(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    price DOUBLE NOT NULL,
+    stock INT NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS notebooks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    price DOUBLE NOT NULL,
+    stock INT NOT NULL,
+);
